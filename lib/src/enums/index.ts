@@ -65,3 +65,8 @@ export const DEFAULT_VALUES = {
   /** 最小渐变点数量 */
   MIN_GRADIENT_POINTS: 2,
 } as const
+
+// 输入类型
+export const SETCOLOR_MODE = {
+  input: 'INPUT',
+} as const

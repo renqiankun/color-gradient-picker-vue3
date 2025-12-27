@@ -14,6 +14,7 @@
 
 <script lang="ts" setup>
 import tc from 'tinycolor2'
+import { SETCOLOR_MODE } from '@/enums'
 
 const { colorState, setValue } = inject('colorProvider') as any
 const hexVal = ref('')
@@ -23,7 +24,7 @@ const onChange = (e) => {
   if (tinyHex.isValid()) {
     const { r, g, b } = tinyHex.toRgb()
     const newColor = `rgba(${r}, ${g}, ${b}, ${colorState.hc?.a})`
-    setValue(newColor)
+    setValue(newColor, SETCOLOR_MODE.input)
   } else {
     hexVal.value = tc(colorState.value)?.toHex()
   }

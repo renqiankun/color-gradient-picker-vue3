@@ -52,7 +52,13 @@ import { presetColors } from '@/constants'
 import { getColors, formatInputValues, low, high } from '@/utils/format'
 import { getDetails, getIsGradient } from '@/utils/utils'
 import tc from 'tinycolor2'
-import { InputType, GradientType, Modes, DEFAULT_VALUES } from '@/enums'
+import {
+  InputType,
+  GradientType,
+  Modes,
+  DEFAULT_VALUES,
+  SETCOLOR_MODE,
+} from '@/enums'
 import { cloneDeep } from 'lodash-es'
 import { createGradientStr, isValidColor } from '@/utils/color'
 import type {
@@ -144,7 +150,7 @@ const setMode = (mode: IMode) => {
 /**
  * 更新颜色值
  */
-const setValue = (color?: string) => {
+const setValue = (color: string, mode?: string) => {
   const _color = color || colorState.value || DEFAULT_VALUES.DEFAULT_COLOR
 
   if (!isValidColor(_color)) {
@@ -158,13 +164,25 @@ const setValue = (color?: string) => {
     const { degreeStr, degrees } = getDetails(_color)
     colorState.degrees = degrees
     colorState.degreesStr = degreeStr
-    colorState.gradientColors = colors
-    colorState.gradientColor = createGradientStr(
-      colors,
-      unref(gradientType),
-      colorState,
-    )
-
+    // input时 setValue 只有一个值进来，此时覆盖是错误的，所以这里要处理
+    if (mode === SETCOLOR_MODE.input) {
+      const oldGradientColors = cloneDeep(colorState.gradientColors) || []
+      const gradientColorsIdx = colorState.gradientColorsIdx || 0
+      oldGradientColors[gradientColorsIdx] = colors[0]
+      colorState.gradientColors = cloneDeep(oldGradientColors)
+      colorState.gradientColor = createGradientStr(
+        oldGradientColors,
+        unref(gradientType),
+        colorState,
+      )
+    } else {
+      colorState.gradientColors = colors
+      colorState.gradientColor = createGradientStr(
+        colors,
+        unref(gradientType),
+        colorState,
+      )
+    }
     const currentColor =
       colorState.gradientColors[colorState.gradientColorsIdx || 0]
     if (currentColor) {
